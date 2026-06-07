@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beli Token Listrik – PLN Indonesia</title>
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .page-hero { background: linear-gradient(135deg, #7c5800, #b58a00); padding: 52px 0 40px; }
+  .page-hero h1 { font-family:'Syne',sans-serif; font-size:clamp(24px,3vw,36px); font-weight:800; color:#fff; margin-bottom:8px; }
+  .page-hero p { font-size:14px; color:rgba(255,255,255,0.75); }
+  .breadcrumb { display:flex; gap:8px; font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:20px; align-items:center; }
+  .breadcrumb a { color:rgba(255,255,255,0.65); } .breadcrumb a:hover { color:var(--yellow); }
+
+  .token-layout { display:grid; grid-template-columns:1fr 340px; gap:28px; align-items:start; max-width:980px; margin:auto; }
+
+  /* Token form */
+  .token-card { background:var(--white); border:1.5px solid var(--gray-2); border-radius:var(--radius); padding:32px; }
+  .token-card h2 { font-size:18px; font-weight:800; color:var(--navy); margin-bottom:24px; font-family:'Syne',sans-serif; }
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+  .form-group label { font-size:13px; font-weight:600; color:var(--text-mid); }
+  .form-group input, .form-group select {
+    padding:12px 16px; border:1.5px solid var(--gray-2); border-radius:var(--radius-sm);
+    font-family:inherit; font-size:15px; color:var(--text-dark); background:var(--white);
+    transition:border-color .2s; outline:none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:#b58a00; box-shadow:0 0 0 3px rgba(181,138,0,0.1); }
+  .form-hint { font-size:11px; color:var(--text-light); margin-top:4px; }
+  .required { color:var(--red); }
+
+  /* Nominal grid */
+  .nominal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  .nominal-item { border:1.5px solid var(--gray-2); border-radius:var(--radius-sm); padding:14px 10px; cursor:pointer; transition:all .2s; text-align:center; }
+  .nominal-item:hover { border-color:#b58a00; background:#FFF8E1; }
+  .nominal-item.selected { border-color:#b58a00; background:#FFF8E1; }
+  .nominal-val { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:var(--navy); }
+  .nominal-kwh { font-size:11px; color:var(--text-light); margin-top:3px; }
+
+  /* Info meter */
+  .meter-info { background:var(--gray-1); border-radius:var(--radius-sm); padding:18px; margin-bottom:20px; display:flex; gap:14px; align-items:center; }
+  .meter-icon { font-size:28px; }
+  .meter-name { font-size:14px; font-weight:700; color:var(--navy); }
+  .meter-addr { font-size:12px; color:var(--text-light); margin-top:2px; }
+  .meter-badge { background:var(--green); color:#fff; font-size:10px; font-weight:700; border-radius:100px; padding:2px 8px; display:inline-block; margin-top:4px; }
+
+  /* Summary */
+  .summary-box { background:linear-gradient(135deg,#FFF8E1,#FFF3CD); border:1.5px solid #F5C518; border-radius:var(--radius-sm); padding:18px; margin-bottom:20px; }
+  .summary-row { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; }
+  .summary-row .label { color:var(--text-light); }
+  .summary-row .value { font-weight:600; color:var(--navy); }
+  .summary-row.total { border-top:1px solid rgba(181,138,0,0.3); margin-top:8px; padding-top:12px; }
+  .summary-row.total .label { font-weight:700; font-size:14px; color:var(--navy); }
+  .summary-row.total .value { color:#b58a00; font-size:18px; font-family:'Syne',sans-serif; font-weight:800; }
+
+  /* Payment methods */
+  .payment-methods { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .payment-item { border:1.5px solid var(--gray-2); border-radius:var(--radius-sm); padding:12px 14px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:10px; }
+  .payment-item:hover { border-color:#b58a00; background:#FFF8E1; }
+  .payment-item.selected { border-color:#b58a00; background:#FFF8E1; }
+  .payment-icon { font-size:20px; }
+  .payment-name { font-size:13px; font-weight:600; color:var(--navy); }
+
+  /* Sidebar */
+  .token-sidebar { display:flex; flex-direction:column; gap:16px; }
+  .sidebar-card { background:var(--white); border:1.5px solid var(--gray-2); border-radius:var(--radius); padding:22px; }
+  .sidebar-card h4 { font-size:14px; font-weight:700; color:var(--navy); margin-bottom:14px; }
+  .riwayat-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--gray-2); }
+  .riwayat-item:last-child { border-bottom:none; }
+  .riwayat-id { font-size:12px; color:var(--text-mid); }
+  .riwayat-nom { font-size:13px; font-weight:700; color:var(--navy); }
+  .riwayat-tgl { font-size:11px; color:var(--text-light); margin-top:2px; }
+  .riwayat-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; }
+  .badge-sukses { background:#dcfce7; color:#15803d; }
+
+  .promo-card { background:linear-gradient(135deg,var(--navy),var(--blue)); border-radius:var(--radius); padding:22px; color:#fff; }
+  .promo-card h4 { font-size:14px; font-weight:700; margin-bottom:8px; }
+  .promo-card p { font-size:12px; color:rgba(255,255,255,0.7); line-height:1.5; margin-bottom:14px; }
+
+  /* Result screen */
+  .result-screen { display:none; text-align:center; padding:32px 20px; }
+  .result-icon { font-size:56px; margin-bottom:16px; }
+  .result-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--navy); margin-bottom:8px; }
+  .token-code-box { background:var(--gray-1); border:2px dashed var(--gray-3); border-radius:var(--radius); padding:24px; margin:20px 0; }
+  .token-code { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--navy); letter-spacing:4px; }
+  .token-code-label { font-size:12px; color:var(--text-light); margin-top:6px; }
+
+  @media(max-width:900px) {
+    .token-layout { grid-template-columns:1fr; }
+    .nominal-grid { grid-template-columns:repeat(3,1fr); }
+    .payment-methods { grid-template-columns:1fr; }
+  }
+  @media(max-width:480px) {
+    .nominal-grid { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <span>🇮🇩 PLN Indonesia – Menerangi Nusantara</span>
+    <div class="topbar-links">
+      <a href="#">PLN Mobile</a><a href="#">Investor</a><a href="#">Karir</a>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z"/></svg></div>
+      <span class="logo-text">PLN<span>.</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="index.html#layanan" class="active">Layanan</a>
+      <a href="gangguan.html">Gangguan</a>
+      <a href="index.html#transformasi">Energi Terbarukan</a>
+      <a href="#">Investor</a>
+      <a href="index.html#berita">Berita</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-outline">🔍 Cari</button>
+      <button class="btn btn-primary">Masuk</button>
+      <button class="btn btn-yellow">Daftar</button>
+      <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">✕</button>
+  <a href="index.html" onclick="toggleMenu()">Beranda</a>
+  <a href="index.html#layanan" onclick="toggleMenu()">Layanan</a>
+  <a href="gangguan.html" onclick="toggleMenu()">Gangguan</a>
+  <a href="index.html#berita" onclick="toggleMenu()">Berita</a>
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px">
+    <button class="btn btn-primary" style="justify-content:center">Masuk</button>
+    <button class="btn btn-yellow" style="justify-content:center">Daftar</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Beranda</a><span>›</span>
+      <a href="index.html#layanan">Layanan</a><span>›</span>
+      <span style="color:#fff">Token Listrik</span>
+    </div>
+    <h1>💡 Beli Token Listrik</h1>
+    <p>Isi daya listrik prabayar Anda kapan saja, token langsung aktif dalam hitungan detik.</p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<section class="section">
+  <div class="container">
+    <div class="token-layout">
+
+      <!-- Form utama -->
+      <div>
+        <div class="token-card fade-up" id="form-view">
+          <h2>💡 Isi Token Listrik</h2>
+
+          <div class="form-group">
+            <label>No. Meter / ID Pelanggan <span class="required">*</span></label>
+            <input type="text" id="meter-input" placeholder="Masukkan 11-13 digit nomor meter" maxlength="13" oninput="checkMeter(this.value)">
+            <span class="form-hint">Cek di meteran listrik atau tagihan PLN Anda</span>
+          </div>
+
+          <!-- Info meter muncul setelah input -->
+          <div class="meter-info" id="meter-info" style="display:none">
+            <div class="meter-icon">⚡</div>
+            <div>
+              <div class="meter-name">Budi Santoso</div>
+              <div class="meter-addr">Jl. Merpati No. 12, Surabaya Selatan</div>
+              <span class="meter-badge">✓ Terverifikasi</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Nominal Token <span class="required">*</span></label>
+          </div>
+          <div class="nominal-grid">
+            <div class="nominal-item" onclick="selectNominal(this, 20000, 16.3)">
+              <div class="nominal-val">Rp 20.000</div>
+              <div class="nominal-kwh">± 16.3 kWh</div>
+            </div>
+            <div class="nominal-item selected" onclick="selectNominal(this, 50000, 40.8)">
+              <div class="nominal-val">Rp 50.000</div>
+              <div class="nominal-kwh">± 40.8 kWh</div>
+            </div>
+            <div class="nominal-item" onclick="selectNominal(this, 100000, 81.6)">
+              <div class="nominal-val">Rp 100.000</div>
+              <div class="nominal-kwh">± 81.6 kWh</div>
+            </div>
+            <div class="nominal-item" onclick="selectNominal(this, 150000, 122.4)">
+              <div class="nominal-val">Rp 150.000</div>
+              <div class="nominal-kwh">± 122.4 kWh</div>
+            </div>
+            <div class="nominal-item" onclick="selectNominal(this, 200000, 163.2)">
+              <div class="nominal-val">Rp 200.000</div>
+              <div class="nominal-kwh">± 163.2 kWh</div>
+            </div>
+            <div class="nominal-item" onclick="selectNominal(this, 500000, 408)">
+              <div class="nominal-val">Rp 500.000</div>
+              <div class="nominal-kwh">± 408 kWh</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Metode Pembayaran <span class="required">*</span></label>
+          </div>
+          <div class="payment-methods">
+            <div class="payment-item selected" onclick="selectPayment(this)">
+              <span class="payment-icon">🏦</span>
+              <span class="payment-name">Transfer Bank</span>
+            </div>
+            <div class="payment-item" onclick="selectPayment(this)">
+              <span class="payment-icon">👛</span>
+              <span class="payment-name">GoPay / OVO</span>
+            </div>
+            <div class="payment-item" onclick="selectPayment(this)">
+              <span class="payment-icon">💳</span>
+              <span class="payment-name">Kartu Kredit</span>
+            </div>
+            <div class="payment-item" onclick="selectPayment(this)">
+              <span class="payment-icon">📱</span>
+              <span class="payment-name">PLN Mobile</span>
+            </div>
+          </div>
+
+          <div class="summary-box" id="summary-box">
+            <div class="summary-row">
+              <span class="label">Nominal token</span>
+              <span class="value" id="sum-nominal">Rp 50.000</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Estimasi kWh</span>
+              <span class="value" id="sum-kwh">± 40.8 kWh</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Biaya admin</span>
+              <span class="value">Rp 2.500</span>
+            </div>
+            <div class="summary-row total">
+              <span class="label">Total Bayar</span>
+              <span class="value" id="sum-total">Rp 52.500</span>
+            </div>
+          </div>
+
+          <button class="btn btn-yellow" style="width:100%;justify-content:center;padding:14px;font-size:15px" onclick="processToken()">
+            💡 Beli Token Sekarang
+          </button>
+        </div>
+
+        <!-- Hasil token -->
+        <div class="token-card result-screen" id="result-view">
+          <div class="result-icon">✅</div>
+          <div class="result-title">Token Berhasil!</div>
+          <p style="color:var(--text-light);font-size:14px">Token listrik Anda sudah aktif. Masukkan kode di bawah ke meteran listrik Anda.</p>
+          <div class="token-code-box">
+            <div class="token-code" id="token-code">0000-0000-0000-0000</div>
+            <div class="token-code-label">Kode Token 20 digit — masukkan ke meteran</div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="copyToken()">📋 Salin Kode</button>
+            <button class="btn btn-outline" onclick="resetForm()">Beli Lagi</button>
+          </div>
+          <div style="margin-top:20px;background:var(--sky-light);border-radius:var(--radius-sm);padding:14px;text-align:left">
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">📲 Kode juga dikirim via SMS & email</div>
+            <div style="font-size:12px;color:var(--text-mid)">Simpan kode token ini. Jika gagal dimasukkan, hubungi PLN 123.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="token-sidebar">
+        <div class="sidebar-card fade-up">
+          <h4>🕐 Riwayat Pembelian</h4>
+          <div class="riwayat-item">
+            <div>
+              <div class="riwayat-nom">Rp 100.000</div>
+              <div class="riwayat-tgl">12 Mei 2025 · 14:32</div>
+            </div>
+            <span class="riwayat-badge badge-sukses">Sukses</span>
+          </div>
+          <div class="riwayat-item">
+            <div>
+              <div class="riwayat-nom">Rp 50.000</div>
+              <div class="riwayat-tgl">28 Apr 2025 · 09:15</div>
+            </div>
+            <span class="riwayat-badge badge-sukses">Sukses</span>
+          </div>
+          <div class="riwayat-item">
+            <div>
+              <div class="riwayat-nom">Rp 200.000</div>
+              <div class="riwayat-tgl">10 Apr 2025 · 19:47</div>
+            </div>
+            <span class="riwayat-badge badge-sukses">Sukses</span>
+          </div>
+          <a href="#" style="font-size:12px;color:var(--blue);font-weight:600;display:block;margin-top:12px">Lihat semua riwayat →</a>
+        </div>
+
+        <div class="promo-card fade-up">
+          <h4>🎁 Promo Bulan Ini</h4>
+          <p>Cashback 5% untuk pembelian token minimal Rp 100.000 menggunakan GoPay. Berlaku sampai 31 Mei 2025.</p>
+          <button class="btn btn-yellow" style="font-size:12px;padding:8px 16px">Klaim Promo</button>
+        </div>
+
+        <div class="sidebar-card fade-up">
+          <h4>💡 Cara Memasukkan Token</h4>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--sky-light);color:var(--blue);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+              <div style="font-size:12px;color:var(--text-mid)">Tekan tombol <strong>Enter/Accept</strong> di meteran</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--sky-light);color:var(--blue);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+              <div style="font-size:12px;color:var(--text-mid)">Masukkan 20 digit kode token satu per satu</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--sky-light);color:var(--blue);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+              <div style="font-size:12px;color:var(--text-mid)">Tekan <strong>Enter/Accept</strong> lagi untuk konfirmasi</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--sky-light);color:var(--blue);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+              <div style="font-size:12px;color:var(--text-mid)">Layar menampilkan jumlah kWh yang ditambahkan ✅</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-text" style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:22px;display:block">PLN<span style="color:#2E8BF0">.</span></span>
+        <p>PT PLN (Persero) berkomitmen menyediakan listrik yang andal untuk seluruh rakyat Indonesia.</p>
+        <div class="footer-social">
+          <div class="social-btn">🐦</div><div class="social-btn">📘</div>
+          <div class="social-btn">📸</div><div class="social-btn">▶</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <div class="footer-links">
+          <a href="pasang-baru.html">Pasang Baru</a>
+          <a href="tagihan.html">Cek Tagihan</a>
+          <a href="token.html">Beli Token</a>
+          <a href="gangguan.html">Lapor Gangguan</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Perusahaan</h4>
+        <div class="footer-links">
+          <a href="#">Tentang PLN</a><a href="#">Investor</a>
+          <a href="#">Karir</a><a href="#">CSR</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <div class="footer-links">
+          <a href="#">📞 123</a>
+          <a href="#">✉️ pln123@pln.co.id</a>
+          <a href="#">PLN Mobile</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 PT PLN (Persero). Seluruh hak dilindungi undang-undang.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
+<script>
+let selectedNominal = 50000;
+let selectedKwh = 40.8;
+
+function checkMeter(val) {
+  document.getElementById('meter-info').style.display = val.length >= 11 ? 'flex' : 'none';
+}
+function selectNominal(el, nom, kwh) {
+  document.querySelectorAll('.nominal-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedNominal = nom;
+  selectedKwh = kwh;
+  document.getElementById('sum-nominal').textContent = 'Rp ' + nom.toLocaleString('id-ID');
+  document.getElementById('sum-kwh').textContent = '± ' + kwh + ' kWh';
+  document.getElementById('sum-total').textContent = 'Rp ' + (nom + 2500).toLocaleString('id-ID');
+}
+function selectPayment(el) {
+  document.querySelectorAll('.payment-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function generateToken() {
+  return Array.from({length:4}, () => Math.floor(1000+Math.random()*9000)).join('-');
+}
+function processToken() {
+  const meter = document.getElementById('meter-input').value;
+  if (meter.length < 11) { showToast('Masukkan nomor meter yang valid (min. 11 digit)','warning'); return; }
+  showToast('Memproses pembayaran...','info');
+  setTimeout(() => {
+    document.getElementById('form-view').style.display = 'none';
+    document.getElementById('result-view').style.display = 'block';
+    document.getElementById('token-code').textContent = generateToken();
+    showToast('Token berhasil dibeli!','success');
+  }, 1800);
+}
+function copyToken() {
+  const code = document.getElementById('token-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Kode token disalin!','success'));
+}
+function resetForm() {
+  document.getElementById('form-view').style.display = 'block';
+  document.getElementById('result-view').style.display = 'none';
+  document.getElementById('meter-input').value = '';
+  document.getElementById('meter-info').style.display = 'none';
+}
+function showToast(msg, type) {
+  const colors={info:'#1A4FA0',success:'#16a34a',warning:'#d97706'};
+  const icons={info:'ℹ️',success:'✅',warning:'⚠️'};
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:28px;right:28px;background:'+colors[type]+';color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;font-family:"Plus Jakarta Sans",sans-serif;box-shadow:0 6px 24px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;z-index:300;max-width:280px;display:flex;gap:8px;align-items:center';
+  t.innerHTML='<span>'+icons[type]+'</span><span>'+msg+'</span>';
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateY(0)';});
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),350);},3000);
+}
+</script>
+</body>
+</html>
