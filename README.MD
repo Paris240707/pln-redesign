@@ -5,10 +5,10 @@ Proyek redesain website resmi PT PLN (Persero) sebagai bagian dari studi kasus U
 ---
 
 ## 🔗 Live Demo
-👉 [Lihat Website](https://pln-redesign.vercel.app) *(ganti dengan link deploy kamu)*
+👉 https://paris240707.github.io/pln-redesign/
 
 ## 🎨 Figma Design
-👉 [Lihat Desain Figma](https://figma.com/...) *(ganti dengan link Figma kamu)*
+👉 https://www.figma.com/design/h9cRvsKSemTnheYrh5fnnW/PLN?node-id=0-1&t=VURRxylMwqhrbYae-1 
 
 ---
 
@@ -46,7 +46,6 @@ pln-redesign/
 ├── style.css           # Seluruh styling
 ├── script.js           # Seluruh interaksi JS
 ├── assets/
-│   ├── images/         # Gambar & foto
 │   └── icons/          # Ikon SVG
 └── README.md
 ```
@@ -80,29 +79,6 @@ pln-redesign/
 | ≥ 1024px | Desktop — 2 kolom, full navbar |
 | 768px – 1024px | Tablet — grid menyesuaikan, hamburger menu |
 | ≤ 480px | Mobile — single kolom, stacked layout |
-
----
-
-## 🚀 Cara Menjalankan
-
-1. Clone repo ini:
-   ```bash
-   git clone https://github.com/username/pln-redesign.git
-   ```
-2. Buka folder proyek:
-   ```bash
-   cd pln-redesign
-   ```
-3. Buka `index.html` di browser, atau gunakan Live Server di VS Code.
-
----
-
-## 👤 Author
-
-**[Nama Kamu]**
-- Portfolio: [link]
-- LinkedIn: [link]
-- GitHub: [@username](https://github.com/username)
 
 ---
 
